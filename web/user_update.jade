@@ -1,0 +1,72 @@
+extends ./layout/layout
+
+block body
+	.containter
+		.app_update
+			.details_list.head_photo_list
+				a(data-url="/user/update/head_photo")
+					img(src="/src/images/user_head_photo.png")
+					span.data
+					i.fa.fa-angle-right.fa-fw.fl
+			.details_list
+				a.user_sex(data-url="/user/update/sex")
+					span.title 性别
+					span.data
+					i.fa.fa-angle-right.fa-fw.fl
+				a.user_address(data-url="/user/update/address")
+					span.title 现居
+					span.data
+					i.fa.fa-angle-right.fa-fw.fl
+				a.user_job(data-url="/user/update/profession")
+					span.title 职业
+					span.data
+					i.fa.fa-angle-right.fa-fw.fl
+			.details_list
+				a.user_sign(data-url="/user/update/idiograph")
+					span.title 签名
+					span.data
+					i.fa.fa-angle-right.fa-fw.fl
+			.details_list
+				a.user_introduce(data-url="/user/update/biography")
+					span.title 简介
+					span.data
+					i.fa.fa-angle-right.fa-fw.fl
+	script.
+		var input_wrap = new input_wrap()
+		$(function(){
+
+			icon_back_toggle()
+			//获取用户信息
+			ajax_details()
+			//修改信息
+			set_submit_box()
+
+			function set_submit_box(){
+				input_wrap.url = 'javascript:'
+				input_wrap.orientation = 'right'
+
+				$('.details_list').on('click', 'a', function(){
+					input_wrap.type = 'input'
+					input_wrap.create()
+					input_wrap.show()
+				})
+			}
+			function ajax_details(){
+				$.ajax({
+					url:'/check/userIsLogin',
+					cache: false,
+					success: function(data){
+						if(data.value != 1){
+							return
+						}
+						$('.head_photo_list img').attr('src', data.head_photo)
+						$('.head_photo_list .data').html(data.username)
+						$('.user_sex .data').html(data.sex)
+						$('.user_address .data').html(data.address)
+						$('.user_job .data').html(data.job)
+						$('.user_sign .data').html(data.sign)
+						$('.user_introduce .data').html(data.introduce)
+					}
+				})
+			}
+		})

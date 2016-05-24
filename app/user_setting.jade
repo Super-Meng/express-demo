@@ -1,0 +1,14 @@
+extends ./layout/layout_inside
+
+block body
+	.containter
+		.app_setting
+			.details_list
+				a(href="javascript:")
+					span.title 登出
+					span.data 登出 Flora Cc
+					i.fa.fa-angle-right.fa-fw.fr
+	script.
+		mui.init({
+			swipeBack: true
+		})

@@ -1,0 +1,68 @@
+extends ./layout/layout
+
+block body
+	.app_user_index
+		.user_box
+			img.user_image(src="./src/images/user_photo.jpg")
+			a(href="javascript:") 编辑资料
+			.clear
+
+		.user_index_list
+			a(href="javascript:") 我的作品
+			a(href="javascript:") 我的收藏
+			a(href="javascript:") 我赞过的
+			a(href="javascript:") 我的关注
+			a(href="javascript:") 我的粉丝
+			a(href="javascript:") 设置
+			.clear
+	script.
+		$(function(){
+			var sub = ['user_work', 'user_work', 'user_work', 'user_work', 'user_work', 'user_setting']
+			var os_style = {
+				hardwareAccelerated: true,
+				popGesture: 'hide'
+			}
+			var web_style = {
+			}
+			//区分web和os的加载方式
+			$.each(sub, function(i){
+				subpages[i] = {
+					url: this + '.html',
+					id: this,
+					styles: subpage_style
+				}
+			})
+			mui.init({
+				preloadPages: [{
+					subpages: subpages
+				
+				}]
+			})
+
+			$('.user_index_list').on('click', 'a',function(){
+				var num = $(this).index()
+				if(mui.os.plus){
+					plus.webview.show(sub[num], 'slide-in-right', '200');
+				}else{
+					$('.mui-iframe-wrapper iframe', window.parent.document).attr('src', sub[num])
+				}
+
+				//- mui.openWindow({
+				//-     url:'user_setting.html',
+				//-     id: 'user_setting',
+				//-     styles:{
+				//-       top: 0,
+				//-       bottom: 0,
+				//-       popGesture: 'close'
+				//-     },
+				//-     extras: {},
+				//-     createNew: false,
+				//-     show:{
+				//-       autoShow: true,
+				//-       aniShow: 'slide-in-right',
+				//-       duration: 200
+				//-     }
+				//- })
+			})
+		})
+			

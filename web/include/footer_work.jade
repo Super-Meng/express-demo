@@ -1,0 +1,189 @@
+.app_footer.footer_work
+	ul
+		li
+			a(href="javascript:").like_btn
+				i.fa.fa-thumbs-o-up.fa-fw
+		li
+			a(href="javascript:").comment_btn
+				i.fa.fa-commenting-o.fa-fw
+		li
+			a(href="javascript:").collect_btn
+				i.fa.fa-heart-o.fa-fw
+		.clear
+script.
+	var input_wrap = new input_wrap()
+	$(function(){
+
+		$.ajax({
+			url: '/check/userIsLogin',
+			cache: false,
+			success: function(data){
+				if(data.value == 1){
+					//已登录才能显示footer
+					set_height()
+					//是否已经点赞
+					is_like()
+					//添加点赞事件
+					like_btn_fn()
+					//是否已经收藏
+					is_collect()
+					//添加收藏事件
+					collect_btn_fn()
+					//添加评论事件
+					comment_btn_fn()
+					$(window).resize(function(){
+						set_height()
+					})
+				}
+			}
+		})
+		//set_height
+		function set_height(){
+			var win_h = $(window).height()
+			var footer_h = $('.app_footer').height()
+			$('.containter')
+				.height(win_h - footer_h -1)
+				.css({
+					'-webkit-overflow-scrolling': 'touch',
+					'overflow-y': 'auto'
+				})
+				$('.app_footer').show()
+		}
+		//is_like?
+		function is_like(){
+			$.ajax({
+				url: window.location.href + '/is_like',
+				cache: false,
+				success: function(data){
+					if(data.value == 1){
+						$('.like_btn i').addClass('c_red').attr('data-like', 1)
+					}else{
+						$('.like_btn i').attr('data-like', 0)
+					}
+				}
+			})
+		}
+		//like_btn_fn
+		function like_btn_fn(){
+			$('.like_btn').on('click', function(){
+				if($('i', this).attr('data-like') != 1){
+					add_like()
+				}else{
+					remove_like()
+				}
+
+				function add_like(){
+					$.ajax({
+						url: window.location.href + '/add_like',
+						cache: false,
+						success: function(data){
+							if(data.value){
+								$('.like_btn i').addClass('c_red').attr('data-like', 1)
+							}
+						}
+					})
+				}
+				function remove_like(){
+					$.ajax({
+						url: window.location.href + '/remove_like',
+						cache: false,
+						success: function(data){
+							if(data.value){
+								$('.like_btn i').removeClass('c_red').attr('data-like', 0)
+							}
+						}
+					})
+				}
+			})
+		}
+		//is_collect?
+		function is_collect(){
+			$.ajax({
+				url: window.location.href + '/is_collect',
+				cache: false,
+				success: function(data){
+					if(data.value == 1){
+						$('.collect_btn i').addClass('c_red').attr('data-collect', 1)
+					}else{
+						$('.collect_btn i').attr('data-collect', 0)
+					}
+				}
+			})
+		}
+		//like_btn_fn
+		function collect_btn_fn(){
+			$('.collect_btn').on('click', function(){
+				if($('i', this).attr('data-collect') != 1){
+					add_collect()
+				}else{
+					remove_collect()
+				}
+
+				function add_collect(){
+					$.ajax({
+						url: window.location.href + '/add_collect',
+						cache: false,
+						success: function(data){
+							if(data.value){
+								$('.collect_btn i').addClass('c_red').attr('data-collect', 1)
+							}
+						}
+					})
+				}
+				function remove_collect(){
+					$.ajax({
+						url: window.location.href + '/remove_collect',
+						cache: false,
+						success: function(data){
+							if(data.value){
+								$('.collect_btn i').removeClass('c_red').attr('data-collect', 0)
+							}
+						}
+					})
+				}
+			})
+		}
+		//add_comment
+		function comment_btn_fn(){
+			input_wrap.type = 'textarea'
+			input_wrap.orientation = 'bottom'
+			input_wrap.create()
+			//添加评论
+			$('.comment_btn').on('click', function(){
+				input_wrap.url = window.location.href + '/add_comment'
+				$('.input_wrap textarea').attr('placeholder', '写评论...')
+				input_wrap.show()
+			})
+			//提交评论事件
+			$('.app_header .input_submit', window.parent.document).on('click.add_comment', function(){
+				ajax_add_comment()
+			})
+
+			function ajax_add_comment(){
+				var content =  $('.input_wrap textarea').val()
+				if(content.length < 15){
+					app_tips_show('请输入15-2000个字符!', 'warning')
+					return
+				}
+				$.ajax({
+					url: input_wrap.url,
+					type: 'POST',
+					data: {
+						content: content
+					},
+					success: function(data){
+						switch(data.value){
+							case 0:
+								app_tips_show(data.tips, 'error')
+								input_wrap.hide()
+							break
+							case 1:
+								app_tips_show(data.tips, 'success')
+								input_wrap.hide()
+							break
+						}
+					}
+				})
+			}
+		}
+	})

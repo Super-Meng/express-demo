@@ -1,0 +1,32 @@
+extends ../layout_inside
+
+block content
+	.app_update
+			.details_list.head_photo_list
+				a(href="/user/update/change_head_photo")
+					img(src="#{user.head_photo}")
+					span.data #{user.username}
+					i.fa.fa-angle-right.fa-fw.fl
+			.details_list
+				a(href="/user/update/change_details/sex")
+					span.title 性别
+					span.data user.sex
+					i.fa.fa-angle-right.fa-fw.fl
+				a(href="/user/update/change_details/address")
+					span.title 现居
+					span.data user.address
+					i.fa.fa-angle-right.fa-fw.fl
+				a(href="/user/update/change_details/profession")
+					span.title 职业
+					span.data user.profession
+					i.fa.fa-angle-right.fa-fw.fl
+			.details_list
+				a(href="/user/update/change_details/idiograph")
+					span.title 签名
+					span.data user.idiograph
+					i.fa.fa-angle-right.fa-fw.fl
+			.details_list
+				a(href="/user/update/change_details/biography")
+					span.title 简介
+					span.data user.biography
+					i.fa.fa-angle-right.fa-fw.fl

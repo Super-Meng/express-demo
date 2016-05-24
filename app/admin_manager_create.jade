@@ -1,0 +1,10 @@
+extends ../layout
+
+block content
+	.admin_welcome
+		form.form_warp(method="POST", action="#{postURL}")
+			input(type="text", placeholder="用户名", name="manager[username]")
+			input(type="password", placeholder="密码", name="manager[password]")
+			input(type="number", placeholder="等级", name="manager[level]")
+			input(type="submit" value="创建管理员")
+	a(href="/manager/logout")

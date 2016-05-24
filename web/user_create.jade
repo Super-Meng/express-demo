@@ -1,0 +1,61 @@
+extends ./layout/layout
+block head
+	script(type="text/javascript", src="/src/js/app_check.min.js")
+		
+block body
+	.app_create
+		form(method="POST", action="/user/create", enctype="multipart/form-data")
+			.user_box
+				img.user_image(src="/src/images/user_head_photo.png")
+				input.user_image_btn(type="file", name="head_photo", accept="image/*")
+			.input_group
+				.input_list.userlist
+					input(type="text", placeholder="请输入帐号", name="username")
+				.input_list.pawlist
+					input(type="password", placeholder="请输入密码", name="password")
+				.input_list.paw2list
+					input(type="password", placeholder="请确认密码", name="password2")
+				.input_list
+					button(type="submit").btn 立即注册
+		script.
+			var _user = new app_check()
+
+			$(function(){
+				upload_image_change('.user_image_btn','.user_image')
+				set_header_title('')
+			
+				$('.app_create').on('click', '.input_group .btn', function(){
+
+					_user.username = $('.userlist input').val()
+					_user.password = $('.pawlist input').val()
+
+					if(!_user.check_username() || !_user.check_password()){
+						return false
+					}
+
+					if($('.paw2list input').val() != _user.password){
+						app_tips_show('两次密码输入不相同!', 'warning')
+						return false
+					}
+
+					$.ajax({
+						url: '/check/userIsCreate',
+						type: 'POST',
+						data: {user:_user},
+						success: function(data){
+							switch(data.value){
+								case 0:
+									app_tips_show('注册成功', 'success')
+									setTimeout(function(){
+										$('.app_create form').submit()
+									},500)
+								break
+								case 1:
+									app_tips_show(data.tips, 'error')
+								break
+							}
+						}
+					})
+					return false
+				})
+			})

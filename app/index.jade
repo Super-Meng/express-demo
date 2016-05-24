@@ -1,0 +1,64 @@
+extends ./layout/layout
+
+block body
+	include ./include/header
+	
+	script.
+		$(function(){
+			//页面ID
+			var sub = [
+				{
+					name:'home',
+					title: 'Flora Cc'
+				},
+				{
+					name:'news',
+					title: '最新作品'
+				},
+				{
+					name:'teams',
+					title: '我的团队'
+				},
+				{
+					name:'user_index',
+					title: '账户管理'
+				}
+			]
+
+			app_init(sub)
+		})
+		//初始化
+		function app_init(sub){
+			//初始化加载数据
+			var os_style = {
+				top: $('.app_header').height()
+			}
+			var extras = {
+				app_url: 'http://localhost:3000'
+			}
+
+			mui.init()
+			mui.plusReady(function(){
+				os_init(sub, os_style, extras)
+				//完成加在后添加侧滑菜单事件
+				tab_menu_toggle('.app_header')
+			})
+
+			function os_init(sub, subpage_style, extras){
+				var self = plus.webview.currentWebview()
+				for (var i = 0; i < sub.length; i++) {
+					var this_sub = plus.webview.create(sub[i].name + '.html', sub[i].name, subpage_style, extras)
+					if (i > 0) {
+						this_sub.hide()
+					}
+					self.append(this_sub)
+				}
+				//侧滑菜单
+				var tab_menu_style = {
+					left: -$(window).width()*0.1625,
+					zindex: 99
+				}
+				var tab_sub = plus.webview.create('tab_menu.html', 'tab_menu', tab_menu_style, extras).hide()
+				self.append(tab_sub)
+			}
+		}

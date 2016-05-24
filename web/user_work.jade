@@ -1,0 +1,29 @@
+extends ./layout/layout
+
+block body
+	.containter
+		.work_list
+			each work in worksList
+				a.work(href="#{work.url}")
+					.comefrom
+						span.user
+							span.time #{work.updateAt}
+						.clear
+					.cover
+						img(src="#{work.titleImage}")
+						.title #{work.title}
+					.date
+						.fl
+							span.type #{work.type}
+							.clear
+						.fr
+							span.watch watch: #{work.watch}
+							span.like like: #{work.like}
+							span.collect collect: #{work.collect}
+							.clear
+						.clear
+	script.
+		$(function(){
+			set_header_title('我的作品')
+			icon_back_toggle()
+		})

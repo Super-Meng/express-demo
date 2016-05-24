@@ -1,0 +1,15 @@
+extends ../layout
+
+block content
+	.app_login
+		.user_box
+			img.user_image(src="/src/images/user_photo.jpg")
+		.input_group
+			form(method="POST", action="#{postURL}")
+				.input_list
+					input(type="text", placeholder="用户名", name="user[username]")
+				.input_list
+					input(type="password", placeholder="密码", name="user[password]")
+				.input_list
+					button(type="submit").btn 登录
+		a(href="/user/create").line_btn 立即注册

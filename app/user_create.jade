@@ -1,0 +1,20 @@
+extends ../layout
+block head
+
+block content
+	.app_create
+		form(method="POST", action="#{postURL}",enctype="multipart/form-data")
+			.user_box
+				img.user_image(src="/src/images/user_photo.jpg")
+				input.user_image_btn(type="file", name="head_photo", accept="image/*")
+			.input_group
+				.input_list
+					input(type="text", placeholder="用户名", name="username", value="#{username}")
+				.input_list
+					input(type="password", placeholder="密码", name="password", value="#{password}")
+				.input_list
+					button(type="submit").btn 立即注册
+		script.
+			$(function(){
+				upload_image_change('.user_image_btn','.user_image')
+			})

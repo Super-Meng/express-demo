@@ -1,0 +1,30 @@
+extends ./layout/layout
+
+block body
+	.containter
+		.app_setting
+			.details_list
+				a(href="/user/update")
+					span.title 编辑
+					span.data 用户信息
+					i.fa.fa-angle-right.fa-fw.fr
+				a(href="/user/update")
+					span.title 编辑
+					span.data 用户简历
+					i.fa.fa-angle-right.fa-fw.fr
+				a.logout(href="javascript:", onClick="reRender_logout()")
+					span.title 登出
+					span.data 登出 Flora Cc
+					i.fa.fa-angle-right.fa-fw.fr
+	script.
+		$(function(){
+			set_header_title('设置')
+			icon_menu_toggle()
+
+			$('.logout').on('click', function(){
+				app_tips_show('登出成功', 'success')
+				setTimeout(function(){
+					window.location.href="/user/logout"
+				},500)
+			})
+		})

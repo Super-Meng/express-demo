@@ -82,4 +82,7 @@ $RECYCLE.BIN/
 *.msp
 
 # Windows shortcuts
-*.lnk
+.svn/
+uploads/users
+uploads/works
+baidu_verify_2NZoYqQCQZ.html

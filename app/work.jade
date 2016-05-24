@@ -1,0 +1,32 @@
+extends ../layout_work
+
+block content
+	.containter
+		.work_details
+			.from_user
+				img(src="#{from_user_head_photo}")
+				span.name #{from_user_name}
+			.content
+				.title
+					span #{work.title}
+					span.type #{work.type}
+					.date.fr
+						span.like.fl like: #{work.like}
+						span.collect.fl collect: #{work.collect}
+						.clear
+					.clear
+				.text #{work.text}
+				each content in work.content
+					.image_list 
+						img.imagePath(src="#{content.imagePath}")
+						.text #{content.text}
+			.like_list
+				.title 
+					| 赞
+					span &nbsp;(99)
+					i.fa.fa-angle-right.fa-fw.fr
+			.comment_list
+				.title 
+					| 评论
+					span &nbsp;(99)
+					i.fa.fa-angle-right.fa-fw.fr

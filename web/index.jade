@@ -1,0 +1,28 @@
+extends ./layout/layout
+
+block body
+	include ./include/header
+	include ./include/tab_menu
+
+	.app_tips
+
+	.app_content
+		iframe.iframe_main(src="/home", id="iframe_main", name="iframe_main")
+
+	.app_mask
+
+	//- script.
+		//- $(function(){
+			//向右滑动弹出菜单
+			//- $('#iframe_main').load(function(){
+			//- 	var tab = $('.tab_menu')
+			//- 	$(this).contents().find('html').on('swiperight', function(){
+			//- 		tab.velocity({
+			//- 			left: 0
+			//- 		},300)
+			//- 		$('.app_mask').show().velocity({
+			//- 			'opacity': 0.3
+			//- 		},300)
+			//- 	})
+			//- })
+		//- })

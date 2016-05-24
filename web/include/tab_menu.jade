@@ -1,0 +1,75 @@
+.tab_menu
+	.user_cover
+		//- .head_photo.fl
+		//- 	a(href="javascript:", data-url="/user/index")
+		//- 		img(src="/src/images/user_head_photo.png" width="100%")
+		//- .user.fl
+		//- 	.username #{user.username}
+		//- 	.user_job #{user.job}
+		//- .clear
+	a.tab_list.c_blue(data-url="/home", href="javascript:")
+		i(style="background-position-y: 0rem;")
+		span 首页
+	a.tab_list(data-url="/news", href="javascript:")
+		i(style="background-position-y: -0.3rem;")
+		span 最新作品
+	a.tab_list(data-url="/teams", href="javascript:")
+		i(style="background-position-y: -0.6rem;")
+		span 团队成员
+	a.tab_list(data-url="/contact", href="javascript:")
+		i(style="background-position-y: -0.91rem;")
+		span 联系我们
+	a.tab_list(data-url="/user/work/add", href="javascript:")
+		i(style="background-position-y: -1.5rem;")
+		span 添加作品
+	a.tab_list(data-url="/user/setting", href="javascript:")
+		i(style="background-position-y: -1.2rem;")
+		span 设置
+nav(style="display:none")
+	a(href="/home")
+	a(href="/news")
+	a(href="/teams")
+	a(href="/contact")
+	a(href="/user/work/add")
+		
+script.
+	$(function(){
+		tab_menu_toggle('.icon_menu')
+		//页面切换
+		$('.tab_menu').on('click', 'a', function(){
+			var url = $(this).attr('data-url')
+			if(url == ''){
+				return
+			}
+			tab_hide()
+			$('.tab_menu .tab_list').removeClass('c_blue')	
+			setTimeout(function(){
+				$('.iframe_main').attr('src', url)
+			},300)
+		})
+		//颜色改变
+		$('.tab_menu').on('click', '.tab_list', function(){
+			$('.tab_menu .tab_list').not(this).removeClass('c_blue')
+			$(this).addClass('c_blue')
+		})
+		//检查登录情况
+		$.ajax({
+			url: '/check/userIsLogin',
+			cache: false,
+			success: function(data){
+				if(data.value){
+					var user_html = '<a class="head_photo fl" href="javascript:" data-url="/user/index">'+
+						'<img src="'+data.head_photo+'" width="100%"/>'+
+						'</a>'+
+					'<div class="user fl">'+
+						'<div class="username">'+data.username+'</div>'+
+						'<div class="user_job">'+data.job+'</div>'+
+						'<div class="clear"></div>'+
+					'</div>'
+					$('.tab_menu .user_cover').html(user_html)
+				}else{
+					$('.tab_menu .user_cover').html('<a class="btn" href="javascript:" data-url="/user/login">登录</a><a class="btn" href="javascript:" data-url="/user/create">注册</a>')
+				}
+			}
+		})
+	})

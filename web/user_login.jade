@@ -1,0 +1,54 @@
+extends ./layout/layout
+
+block head
+	script(type="text/javascript", src="/src/js/app_check.min.js")
+
+block body
+	.app_login
+		.user_box
+			img.user_image(src="/src/images/user_head_photo.png")
+		.input_group
+			form
+				.input_list.userlist
+					input(type="text", placeholder="用户名", name="user[username]")
+				.input_list.pawlist
+					input(type="password", placeholder="密码", name="user[password]")
+				.input_list
+					button(type="submit").btn 登录
+					a(href="/user/create").write_btn 立即注册
+	script.
+		var _user = new app_check()
+
+		$(function(){
+			set_header_title('')
+
+			$('.app_login').on('click', '.input_group .btn', function(){
+				$('input').blur()
+				_user.username = $('.userlist input').val()
+				_user.password = $('.pawlist input').val()
+
+				if(!_user.check_username() || !_user.check_password()){
+					return false
+				}
+
+				$.ajax({
+					url: '/user/login',
+					type: 'POST',
+					data: {user:_user},
+					success: function(data){
+						switch(data.value){
+							case 0:
+								app_tips_show(data.tips, 'error')
+							break
+							case 1:
+								app_tips_show(data.tips, 'success')
+								setTimeout(function(){
+									window.location.href = '/user/index'
+								},500)
+							break
+						}
+					}
+				})
+				return false
+			})
+		})

@@ -1,0 +1,370 @@
+extends ./layout/layout
+
+block body
+	.containter
+		.work_details
+			.from_user
+				img(src="/src/images/user_head_photo.png")
+				span.name Flora Cc
+			.content
+				.title
+					span.titleName
+					span.type
+					.date.fr
+						span.watch.fl
+						span.like.fl
+						span.collect.fl
+						.clear
+					.clear
+				.text.main
+				.list_group
+			.like_list
+				a.title(href="javascript:")
+					| 赞
+					span
+					i.fa.fa-angle-right.fa-fw.fr
+				.head_photo_group
+					.clear
+			.comment_list
+				a.title(href="javascript:")
+					| 评论 
+					span
+						|(
+						span.data
+						| )
+					i.fa.fa-angle-right.fa-fw.fr
+				.common_list
+	.app_footer.footer_work
+		ul
+			li
+				a(href="javascript:").like_btn
+					i.fa.fa-thumbs-o-up.fa-fw
+			li
+				a(href="javascript:").comment_btn
+					i.fa.fa-commenting-o.fa-fw
+			li
+				a(href="javascript:").collect_btn
+					i.fa.fa-heart-o.fa-fw
+			.clear
+
+	
+	script.
+		var input_wrap = new input_wrap()
+		$(function(){
+			//修改标题
+			set_header_title('')
+			//添加返回按钮
+			icon_back_toggle()
+			//获取作品详细信息
+
+			$.ajax({
+				url: '/check/userIsLogin',
+				cache: false,
+				success: function(data){
+					if(data.value == 1){
+						//已登录才能显示footer
+						set_height()
+						//是否已经点赞
+						is_like()
+						//添加点赞事件
+						like_btn_fn()
+						//是否已经收藏
+						is_collect()
+						//添加收藏事件
+						collect_btn_fn()
+						//添加评论事件
+						comment_btn_fn()
+
+						$(window).resize(function(){
+							set_height()
+						})
+					}
+					//获取作品详细信息
+					data_work(data.value)
+					//获取评论列表
+					data_comments(data.value)
+				}
+			})
+
+			
+			//获取作品点赞列表
+			data_likes()
+			
+
+			$('.like_list .title').on('click', function(){
+				window.location.href = window.location.pathname + '/like_list'
+			})
+
+			$('.comment_list .title').on('click', function(){
+				window.location.href = window.location.pathname + '/comment_list'
+			})
+
+			//set_height
+			function set_height(){
+				var win_h = $(window).height()
+				var footer_h = $('.app_footer').height()
+				$('.containter')
+					.height(win_h - footer_h)
+					$('.app_footer').show()
+			}
+			//is_like?
+			function is_like(){
+				$.ajax({
+					url: window.location.href + '/is_like',
+					cache: false,
+					success: function(data){
+						if(data.value == 1){
+							$('.like_btn i').addClass('c_red').attr('data-like', 1)
+						}else{
+							$('.like_btn i').attr('data-like', 0)
+						}
+					}
+				})
+			}
+			//like_btn_fn
+			function like_btn_fn(){
+				$('.like_btn').on('click', function(){
+					if($('i', this).attr('data-like') != 1){
+						add_like()
+					}else{
+						app_tips_show('您已赞过该作品!', 'warning')
+					}
+
+					function add_like(){
+						$.ajax({
+							url: window.location.href + '/add_like',
+							cache: false,
+							success: function(data){
+								if(data.value == 1){
+									$('.like_btn i').addClass('c_red').attr('data-like', 1)
+								}
+							}
+						})
+					}
+				})
+			}
+			//is_collect?
+			function is_collect(){
+				$.ajax({
+					url: window.location.href + '/is_collect',
+					cache: false,
+					success: function(data){
+						if(data.value == 1){
+							$('.collect_btn i').addClass('c_red').attr('data-collect', 1)
+						}else{
+							$('.collect_btn i').attr('data-collect', 0)
+						}
+					}
+				})
+			}
+			//like_btn_fn
+			function collect_btn_fn(){
+				$('.collect_btn').on('click', function(){
+					if($('i', this).attr('data-collect') != 1){
+						add_collect()
+					}else{
+						remove_collect()
+					}
+
+					function add_collect(){
+						$.ajax({
+							url: window.location.href + '/add_collect',
+							cache: false,
+							success: function(data){
+								if(data.value){
+									$('.collect_btn i').addClass('c_red').attr('data-collect', 1)
+								}
+							}
+						})
+					}
+					function remove_collect(){
+						$.ajax({
+							url: window.location.href + '/remove_collect',
+							cache: false,
+							success: function(data){
+								if(data.value){
+									$('.collect_btn i').removeClass('c_red').attr('data-collect', 0)
+								}
+							}
+						})
+					}
+				})
+			}
+			//add_comment
+			function comment_btn_fn(){
+				input_wrap.type = 'textarea'
+				input_wrap.orientation = 'bottom'
+				input_wrap.create()
+				//添加评论
+				$('.comment_btn').on('click', function(){
+					input_wrap.url = window.location.href + '/add_comment'
+					$('.input_wrap textarea').attr('placeholder', '写评论...')
+					input_wrap.show()
+				})
+				//提交评论事件
+				$('.app_header .input_submit', window.parent.document).on('click.add_comment', function(){
+					ajax_add_comment()
+				})
+
+				function ajax_add_comment(){
+					var content =  $('.input_wrap textarea').val()
+					if(content.length < 15){
+						app_tips_show('请输入15-2000个字符!', 'warning')
+						return
+					}
+					$.ajax({
+						url: input_wrap.url,
+						type: 'POST',
+						data: {
+							content: content
+						},
+						success: function(data){
+							switch(data.value){
+								case 0:
+									app_tips_show(data.tips, 'error')
+									input_wrap.hide()
+								break
+								case 1:
+									app_tips_show(data.tips, 'success')
+									input_wrap.hide()
+									//重新加载评论列表
+									$('.common_comment').html('')
+									data_comments()
+								break
+							}
+						}
+					})
+				}
+			}
+			function data_work(is_login){
+				$.ajax({
+					url: '/data' + window.location.pathname,
+					cache: false,
+					success: function(data){
+						var wrap = $('.work_details')
+						$('.from_user img', wrap).attr('src',data.from_user_head_photo)
+						$('.from_user .name', wrap).html(data.from_user_name)
+						$('.content .titleName', wrap).html(data.work.title)
+						$('.content .type', wrap).html(data.work.type)
+						$('.content .watch', wrap).html('<i class="fa fa-eye fa-fw"></i> ' + data.work.watch)
+						$('.content .like', wrap).html('<i class="fa fa-thumbs-o-up fa-fw"></i> ' + data.likes)
+						$('.content .collect', wrap).html('<i class="fa fa-heart-o fa-fw"></i> ' + data.collects)
+						$('.content .main', wrap).html(data.work.text)
+						$.each(data.work.content, function(i, content){
+							var image_list = '<div class="image_list">'+
+								'<img class="imagePath" src="'+ content.imagePath +'"/>'+
+								'<div class="text">'+ content.text +'</div>'+
+							'</div>'
+							$('.list_group' ,wrap).append(image_list)
+						})
+						$('.like_list span',wrap).html(' ('+ data.likes +')')
+						//添加关注事件
+						if(is_login == 1){
+							set_follower(data.from_user_id)
+						}
+					}
+				})
+			}
+			function data_likes(){
+				$.ajax({
+					url:'/data' + window.location.pathname + '/like_list',
+					success: function(data){
+						if(data.value != 1){
+							return
+						}
+						$.each(data.lists, function(i, like){
+							$('.like_list .head_photo_group .clear').before('<img class="photo" src="'+ like.head_photo +'"/>')
+						})
+					}
+				})
+			}
+			function data_comments(is_login){
+				$.ajax({
+					url: '/data' + window.location.pathname + '/comment_list',
+					cache: false,
+					success: function(data){
+						if(data.value != 1){
+							return
+						}
+						$('.comment_list .title .data').html(data.comment.length)
+
+						$('.common_list').addClass('common_comment')
+
+						$.each(data.comment, function(i, comment){
+							if(comment.state != 0){
+								var comment_html = '<a href="javascript:" class="list" data-id="'+ comment._id +'">'+
+								'<div class="fl"><img class="head_photo" src="'+ comment.head_photo +'"/></div>'+
+								'<div class="fl">'+
+								'<span class="username">'+ comment.username +'</span>'+
+								'<span class="comment_content">'+ comment.content +'</span>'+
+								'</div><div class="clear"></div>'+
+								'<span class="time">'+ comment.createAt +'</span></a>'
+								
+								$('.common_list').append(comment_html)
+
+								if(comment.state == 2){
+									if(comment.from_state == 0){
+
+									}else{
+										var replay_html = '<div class="reply">'+
+											'<span>回复 '+ comment.from_user +'  ：</span>'+
+											'<span>'+ comment.from_content +'</span>'+
+										'</div>'
+										$('.common_list .list').eq(i).append(replay_html)
+									}
+								}
+
+								if(is_login == 1){
+									$('.common_comment .list').eq(i).on('click', function(){
+										var commentID = $(this).attr('data-id')
+										input_wrap.url = window.location.href + '/add_comment/' + commentID
+
+										$('.input_wrap textarea').attr('placeholder', '对 '+ comment.username +' 说...')
+										input_wrap.show()
+									})
+								}
+							}
+						})
+					}
+				})
+			}
+			function set_follower(followerID){
+				$.ajax({
+					url: '/user/check_follower/' + followerID,
+					cache: false,
+					success: function(data){
+						if(data.value == 2){
+							return
+						}
+						$('.work_details .from_user').append('<a class="follower" href="javascript:"></a>')
+
+						switch(data.value){
+							case 0:
+								add_follower_btn()
+								$('.work_details .follower').html('<i class="fa fa-plus fa-fw"></i>')
+							break
+							case 1:
+								$('.work_details .follower').addClass('is_follow').html('<i class="fa fa-check fa-fw"></i>').off()
+							break
+						}
+					}
+				})
+				
+				function add_follower_btn(){
+					$('.work_details .follower').on('click', function(){
+						$.ajax({
+							url: '/user/add_follower/' + followerID,
+							cache: false,
+							success: function(data){
+								if(data.value == 1){
+									app_tips_show(data.tips , 'success')
+									$('.work_details .follower').addClass('is_follow').html('<i class="fa fa-check fa-fw"></i>').off()
+								}else{
+									app_tips_show(data.tips , 'error')
+								}
+							}
+						})
+					})
+				}
+			}
+		})

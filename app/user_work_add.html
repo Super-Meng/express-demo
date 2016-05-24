@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Flora Cc</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="email=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <link rel="shortcut icon" href="./src/images/favicon.ico">
+    <!--libs-->
+    <script type="text/javascript" src="./src/js/libs/jquery-1.12.0.min.js"></script>
+    <link rel="stylesheet" href="./src/css/font-awesome.min.css">
+    <!--mui-->
+    <script src="./src/js/mui.min.js"></script>
+    <link rel="stylesheet" href="./src/css/mui.min.css">
+    <!--app-->
+    <link rel="stylesheet" href="./src/css/layout.min.css">
+    <script type="text/javascript" src="./src/js/layout.min.js"></script>
+  </head>
+  <body>
+    <div class="containter">
+      <div class="add_work">
+        <div class="input_group">
+          <form method="POST" action="undefined" enctype="multipart/form-data">
+            <div class="cover">
+              <div class="title">添加封面</div>
+              <div class="input_list">
+                <input name="title" type="text" placeholder="标题">
+                <select name="type">
+                  <option value="平面设计">平面设计</option>
+                  <option value="网页设计">网页设计</option>
+                  <option value="UI设计">UI设计</option>
+                </select>
+              </div>
+              <div class="update_group update_cover"><img src="./src/images/bg_common.jpg" class="upload_img">
+                <input name="titleImage" type="file" accept="image/*" class="upload_btn">
+              </div>
+            </div>
+            <div class="content">
+              <div class="title">添加正文</div>
+              <div class="input_list">
+                <input name="main" type="text" placeholder="正文" class="main"><a href="javascript:" class="add_path">添加图文</a>
+              </div>
+            </div>
+            <div class="input_list">
+              <button type="submit" class="btn submitBtn">添加作品</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script>
+      $(function(){
+      	upload_image_change('.update_cover .upload_btn','.update_cover .upload_img')
+      	upload_image_change('.update_group_1 .upload_btn','.update_group_1 .upload_img')
+      	//update_cover_image_click
+      	$('.update_cover .upload_img').click(function(){
+      		$('.update_cover .upload_btn').click()
+      	})
+      	//提交检查
+      	$('.submitBtn').on('click', function(){
+      		var len = $('.update_group').length - 2
+      
+      		if(
+      			$('.cover input').val() == '' ||
+      			$('.update_cover input')[0].files.length == 0 ||
+      			$('.content .main').val() == '' ||
+      			$('.update_list_'+len+' .upload_btn')[0].files.length == 0
+      		){
+      			alert('请填写完整信息')
+      			return false
+      		}
+      	})
+      	//图文添加事件
+      	var a_click = 0
+      	$('.content .add_path').on('click', function(){
+      		var this_btn = '.update_list_'+a_click+' .upload_btn'
+      		var this_img = '.update_list_'+a_click+' .upload_img'
+      		var lastClick =  a_click - 1
+      		var last_btn = '.update_list_'+lastClick+' .upload_btn'
+      
+      		if(a_click > 10){
+      			alert('不能添加过多图文!')
+      			return
+      		}
+      		if(a_click > 0){
+      			if($(last_btn)[0].files.length == 0){
+      				console.log('存在')
+      				return
+      			}
+      		}
+      
+      		$(this).before('<div class="update_group update_list_'+a_click+'">'+
+      			'<img src="./src/images/bg_common.jpg" class="upload_img"/>'+
+      			'<input name="imagePath" type="file" accept="image/*" class="upload_btn"/>'+
+      			'<input name="text" type="text" placeholder="添加图片说明"/>'+
+      		'</div>')
+      		upload_image_change(this_btn, this_img)
+      
+      		$(this_btn).change(function(){
+      			if($(this)[0].files.length == 0){
+      				$(this_img).attr('src','./src/images/bg_common.jpg')
+      			}
+      		})
+      
+      		$(this_img).click(function(){
+      			$(this_btn).click()
+      		})
+      
+      		$(this_btn).click()
+      
+      		a_click ++
+      	})
+      })
+    </script>
+  </body>
+</html>

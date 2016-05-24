@@ -1,0 +1,84 @@
+extends ./layout/layout
+
+block body
+	.containter
+		.add_work
+			.input_group
+				form(method="POST", action="#{postURL}", enctype="multipart/form-data")
+					.cover
+						.title 添加封面
+						.input_list
+							input(name="title", type="text", placeholder="标题")
+							select(name="type")
+								option(value="平面设计") 平面设计
+								option(value="网页设计") 网页设计
+								option(value="UI设计") UI设计
+						.update_group.update_cover
+							img.upload_img(src="/src/images/bg_common.jpg")
+							input.upload_btn(name="titleImage", type="file", accept="image/*")
+					.content
+						.title 添加正文
+						.input_list
+							input.main(name="main" ,type="text", placeholder="正文")
+							a.add_path(href="javascript:") 添加图文
+
+					.input_list
+						button.btn.submitBtn(type="submit") 添加作品
+	script.
+		$(function(){
+			set_header_title('添加作品')
+			icon_menu_toggle()
+
+			upload_image_change('.update_cover .upload_btn','.update_cover .upload_img')
+			upload_image_change('.update_group_1 .upload_btn','.update_group_1 .upload_img')
+			
+			//提交检查
+			$('.submitBtn').on('click', function(){
+				var len = $('.update_group').length - 2
+
+				if(
+					$('.cover input').val() == '' ||
+					$('.update_cover input')[0].files.length == 0 ||
+					$('.content .main').val() == '' ||
+					$('.update_list_'+len+' .upload_btn')[0].files.length == 0
+				){
+					alert('请填写完整信息')
+					return false
+				}
+			})
+			//图文添加事件
+			var a_click = 0
+			$('.content .add_path').on('click', function(){
+				var this_btn = '.update_list_'+a_click+' .upload_btn'
+				var this_img = '.update_list_'+a_click+' .upload_img'
+				var lastClick =  a_click - 1
+				var last_btn = '.update_list_'+lastClick+' .upload_btn'
+
+				if(a_click > 10){
+					alert('不能添加过多图文!')
+					return
+				}
+				if(a_click > 0){
+					if($(last_btn)[0].files.length == 0){
+						console.log('存在')
+						return
+					}
+				}
+
+				$(this).before('<div class="update_group update_list_'+a_click+'">'
+				+'<img src="/src/images/bg_common.jpg" class="upload_img"/>'
+				+'<input name="imagePath" type="file" accept="image/*" class="upload_btn"/>'
+				+'</div>')
+				upload_image_change(this_btn, this_img)
+
+				$(this_btn).change(function(){
+					if($(this)[0].files.length == 0){
+						$(this_img).attr('src','./src/images/bg_common.jpg')
+					}
+				})
+
+				$(this_btn).click()
+
+				a_click ++
+			})
+		})

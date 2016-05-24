@@ -1,0 +1,41 @@
+extends ./layout/layout
+
+block body
+	.container
+		.work_list
+			//- each work in worksList
+			//- 	a.work(href="#{work.url}")
+			//- 		.comefrom
+			//- 			span.user
+			//- 				img(src="#{work.from_photo}").head_photo
+			//- 				span.name #{work.from}
+			//- 				span.time.fr #{work.meta.updateAt}
+			//- 			.clear
+			//- 		.cover
+			//- 			img(src="#{work.titleImage}")
+			//- 			.title #{work.title}
+			//- 		.date
+			//- 			.fl
+			//- 				span.type #{work.type}
+			//- 				.clear
+			//- 			.fr
+			//- 				span.like like: #{work.like}
+			//- 				span.collect collect: #{work.collect}
+			//- 				.clear
+			//- 			.clear
+	script.
+		$(function(){
+			var worksList = [{
+				url: '/news',
+				from_photo: 'src/images/bg_common.jpg',
+				from: 'CARVIN',
+				meta: {
+					updateAt: '2016-01-01'
+				},
+				titleImage: 'src/images/pic_add/user.jpg',
+				title:'123',
+				type:'UI',
+				like: 99,
+				collect: 99
+			}]
+		})

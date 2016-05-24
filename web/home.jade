@@ -1,0 +1,24 @@
+extends ./layout/layout
+
+block head
+	style.
+		body{
+			background: #89abe3;
+		}
+
+block body
+	.containter.welcome
+		.banner
+			img(src="./src/images/pic_title.png")
+			span
+		.btn_group
+			a(href="/news") 最新作品
+			a(href="/teams") 团队成员
+			a(href="/contact") 联系我们
+
+	script.
+		$(function(){
+			set_header_title('')
+			icon_menu_toggle()
+			app_tips_hide()
+		})

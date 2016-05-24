@@ -1,0 +1,96 @@
+extends ./layout/layout
+
+block body
+	.containter
+		.work_list(style="display: none")
+			//a.work(href="javascript:")
+				.comefrom
+					span.user
+						img(src="/src/images/user_head_photo.png").head_photo
+						span.name
+						span.time.fr
+					.clear
+				.cover
+					.image_box
+						img(src="/src/images/bg_common.jpg")
+					.title
+				.date
+					.fl
+						span.type
+						.clear
+					.fr
+						span.watch
+						span.like
+						span.collect
+						.clear
+					.clear
+	script.
+		$(function(){
+
+			render()
+
+			function render(){
+				switch(window.location.pathname){
+					case '/news':
+						ajax_list('/data/news','最新作品')
+						icon_menu_toggle()
+					break
+					case '/user/like':
+						ajax_list('/data/user/like','我赞过的')
+						icon_back_toggle()
+					break
+					case '/user/collect':
+						ajax_list('/data/user/collect','我的收藏')
+						icon_back_toggle()
+					break
+				}
+			}
+
+			
+			function ajax_list(ajax_url,list_name){
+				//修改头部title
+				set_header_title(list_name)
+				//
+				$.ajax({
+					url: ajax_url,
+					cache: false,
+					success: function(data){
+						if(data.value != 1){
+							return
+						}
+						$.each(data.worksList, function(i, work){
+							var list_html = '<a href="'+ work.url +'" class="work">'+
+								'<div class="comefrom">'+
+									'<span class="user">'+
+										'<img src="'+ work.from_photo +'" alt="" class="head_photo">'+
+										'<span class="name">'+ work.from +'</span>'+
+										'<span class="time fr">'+ work.meta.updateAt +'</span>'+
+									'</span>'+
+									'<div class="clear"></div>'+
+								'</div>'+
+								'<div class="cover">'+
+									'<div class="image_box"><img src="'+ work.titleImage +'" alt=""></div>'+
+									'<div class="title">'+ work.title +'</div>'+
+								'</div>'+
+								'<div class="date">'+
+									'<div class="fl">'+
+										'<span class="type">'+ work.type +'</span>'+
+										'<div class="clear"></div>'+
+									'</div>'+
+									'<div class="fr">'+
+										'<span class="watch"><i class="fa fa-eye fa-fw"></i> '+ work.watch +'</span>'+
+										'<span class="like"><i class="fa fa-thumbs-o-up fa-fw"></i> '+ work.like +'</span>'+
+										'<span class="collect"><i class="fa fa-heart-o fa-fw"></i> '+ work.collect +'</span>'+
+										'<div class="clear"></div>'+
+									'</div>'+
+									'<div class="clear"></div>'+
+								'</div>'+
+							'</a>'
+							$('.work_list').append(list_html)
+						})
+						//显示列表
+						$('.work_list').show()
+					}
+				})
+			}
+		})

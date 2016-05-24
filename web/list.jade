@@ -1,0 +1,222 @@
+extends ./layout/layout
+
+block body
+	.containter
+		.common_list
+	script.
+		var input_wrap = new input_wrap()
+		$(function(){
+			//修改标题
+			set_header_title('')
+			//添加返回按钮
+			icon_back_toggle()
+
+			var type = window.location.pathname.split('/')
+			
+			switch(type[type.length -1]){
+				case 'like_list':
+					//获取作品点赞列表
+					$('.common_list').addClass('common_like')
+					var like_add_fn = function(i){
+						$('.time').eq(i).show()
+					}
+					data_user_list(like_add_fn)
+				break
+				case 'comment_list':
+					data_comment_list()
+				break
+				case 'follower':
+					data_follower_list('follower')
+				break
+				case 'fans':
+					data_follower_list('fans')
+				break
+			}
+
+			function data_comment_list(){
+				$.ajax({
+					url: '/check/userIsLogin',
+					cache: false,
+					success: function(data){
+						//获取评论列表
+						if(data.value == 1){
+							input_wrap.type = 'textarea'
+							input_wrap.orientation = 'bottom'
+							input_wrap.create()
+							//提交评论事件
+							$('.app_header .input_submit', window.parent.document).on('click.add_comment', function(){
+								ajax_add_comment()
+							})
+							function ajax_add_comment(){
+								var content =  $('.input_wrap textarea').val()
+								if(content.length < 15){
+									app_tips_show('请输入15-2000个字符!', 'warning')
+									return
+								}
+								$.ajax({
+									url: input_wrap.url,
+									type: 'POST',
+									data: {
+										content: content
+									},
+									success: function(data){
+										switch(data.value){
+											case 0:
+												app_tips_show(data.tips, 'error')
+												input_wrap.hide()
+											break
+											case 1:
+												app_tips_show(data.tips, 'success')
+												input_wrap.hide()
+												//重新加载评论列表
+												$('.common_list').html('')
+												data_comments()
+											break
+										}
+									}
+								})
+							}
+						}
+						data_comments(data.value)
+					}
+				})
+			}
+			function data_user_list(add_fn){
+				$.ajax({
+					url:'/data' + window.location.pathname,
+					cache: false,
+					success: function(data){
+						if(data.value != 1){
+							return
+						}
+
+						$.each(data.lists, function(i, list){
+							var list_html  = '<div class="list_wrap"><a href="javascript:" class="list">'+
+							'<div class="fl"><img class="head_photo" src="'+ list.head_photo +'"/></div>'+
+							'<div class="fl">'+
+							'<span class="username">'+ list.username +'</span>'+
+							'<span class="job">'+ list.job +'</span></div><div class="clear"></div>'+
+							'<span class="time" style="display: none;">'+ list.createAt +'</span></a></div>'
+
+							$('.common_list').append(list_html)
+
+							if(add_fn){
+								add_fn(i, list)
+							}
+						})
+					}
+				})
+			}
+			function data_follower_list(list_type){
+				var set_follower_render = function(i, data){
+					$('.common_follower .list').eq(i).append('<a class="follower is_follow" href="javascript:"><i class="fa fa-check fa-fw"></i></a>')
+
+					$('.common_follower .list_wrap').eq(i).append('<div class="list_right_box">'+
+					'<span class="tips">确认取关 '+ data.username +' 吗?</span>'+
+					'<a href="javascript:" class="yes btn"><i class="fa fa-check fa-fw"></i></a>'+
+					'<a href="javascript:" class="no btn"><i class="fa fa-times fa-fw"></i></a></div>')
+
+					$('.common_follower .list .follower').eq(i).on('click', function(){
+						var this_list = $(this).parent()
+						list_hide(this_list)
+					})
+
+					$('.common_follower .list_right_box .no').eq(i).on('click', function(){
+						var this_list = $(this).parent().parent()
+						list_show('.list', this_list)
+					})
+
+					$('.common_follower .list_right_box .yes').eq(i).on('click', function(){
+						var this_list = $(this).parent().parent()
+						$.ajax({
+							url:'/user/remove_'+ list_type +'/' + data._id,
+							cache: false,
+							success: function(data){
+								if(data.value == 1){
+									$(this_list).velocity({
+										height: 0
+									},300)
+									setTimeout(function(){
+										$(this_list).remove()
+									},300)
+								}
+							}
+						})
+					})
+
+					function list_show(list_class){
+						var fps = 18
+						var render_toggle = setInterval(function(){
+							$(list_class).css('left', -100/18*fps + '%')
+							if(fps == 0){
+								clearInterval(render_toggle)
+							}
+							fps--
+						},1000/60)
+					}
+					function list_hide(list_class){
+						var fps = 0
+						var render_toggle = setInterval(function(){
+							$(list_class).css('left', -100/18*fps + '%')
+							if(fps == 18){
+								clearInterval(render_toggle)
+							}
+							fps++
+						},1000/60)
+					}
+				}
+
+				$('.common_list').addClass('common_follower')
+				data_user_list(set_follower_render)
+			}
+			function data_comments(is_login){
+				$.ajax({
+					url:'/data' + window.location.pathname,
+					success: function(data){
+						if(data.value != 1){
+							return
+						}
+
+						$('.common_list').addClass('common_comment')
+
+						$.each(data.comment, function(i, comment){
+							if(comment.state != 0){
+								var comment_html = '<a href="javascript:" class="list" data-id="'+ comment._id +'">'+
+								'<div class="fl"><img class="head_photo" src="'+ comment.head_photo +'"/></div>'+
+								'<div class="fl">'+
+								'<span class="username">'+ comment.username +'</span>'+
+								'<span class="comment_content">'+ comment.content +'</span>'+
+								'</div><div class="clear"></div>'+
+								'<span class="time">'+ comment.createAt +'</span></a>'
+								
+								$('.common_list').append(comment_html)
+
+								if(comment.state == 2){
+									if(comment.from_state == 0){
+
+									}else{
+										var replay_html = '<div class="reply">'+
+											'<span>回复 '+ comment.from_user +'  ：</span>'+
+											'<span>'+ comment.from_content +'</span>'+
+										'</div>'
+										$('.common_list .list').eq(i).append(replay_html)
+									}
+								}
+
+								if(is_login == 1){
+									$('.common_comment .list').eq(i).on('click', function(){
+										var commentID = $(this).attr('data-id')
+										var win_url = window.location.pathname.split('/')
+
+										input_wrap.url = '/work/'+ data.workID +'/add_comment/' + commentID
+
+										$('.input_wrap textarea').attr('placeholder', '对 '+ comment.username +' 说...')
+										input_wrap.show()
+									})
+								}
+							}
+						})
+					}
+				})
+			}
+		})

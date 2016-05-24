@@ -1,0 +1,15 @@
+CACHE MANIFEST
+# VERSION 0.0.2
+
+# 直接缓存的文件
+CACHE:
+/src/css/layout.min.css
+
+# 需要在线访问的文件
+NETWORK:
+/src/css/cache.manifest
+/src/images/
+*
+
+# 替代方案
+FALLBACK:

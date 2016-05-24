@@ -1,0 +1,34 @@
+extends ./layout/layout
+
+block body
+	.containter
+		a(href="index1") index1
+		a(href="index2") index2
+		.pjax_page
+			include index1_pjax
+
+	
+	script.
+		$('.pjax_page').on('pjax.start', function(){
+			console.log(123)
+		})
+		$.pjax({
+		    selector: 'a',
+		    container: '.pjax_page', //内容替换的容器
+		    show: 'fade',  //展现的动画，支持默认和fade, 可以自定义动画方式，这里为自定义的function即可。
+		    cache: false,  //是否使用缓存
+		    storage: false,  //是否使用本地存储
+		    titleSuffix: '', //标题后缀
+		    filter: function(){},
+		    callback: function(status){
+		    	var type = status.type;
+		        switch(type){
+		            case 'success':
+		            	console.log('success')
+		            break
+		            case 'cache': ;break; //读取缓存 
+		            case 'error': ;break; //发生异常
+		            case 'hash': ;break; //只是hash变化
+		        }
+		    }
+		})

@@ -1,0 +1,59 @@
+extends ./layout/layout
+
+block body
+	.containter
+		.app_user_index
+			a.user_box(href="javascript:")
+				.fl
+					img.user_head_photo(src="/src/images/user_head_photo.png")
+				.fl
+					span.user_name
+				.clear
+				i.fa.fa-angle-right.fa-fw.icon_right
+
+			.user_index_list
+				.list
+					span 人气
+				.list
+					span 获赞
+
+			.user_index_list
+				a.list(href="/user/work")
+					span 我的作品
+					i.fa.fa-angle-right.fa-fw.icon_right
+				a.list(href="/user/collect")
+					span 我的收藏
+					i.fa.fa-angle-right.fa-fw.icon_right
+				a.list(href="/user/like")
+					span 我赞过的
+					i.fa.fa-angle-right.fa-fw.icon_right
+				a.list(href="/user/follower")
+					span 我的关注
+					i.fa.fa-angle-right.fa-fw.icon_right
+				a.list(href="/user/fans")
+					span 我的粉丝
+					i.fa.fa-angle-right.fa-fw.icon_right
+
+			.user_index_list
+				a.list(href="/user/setting")
+					span 设置
+					i.fa.fa-angle-right.fa-fw.icon_right
+	script.
+		$(function(){
+			set_header_title('')
+			icon_menu_toggle()
+			app_tips_hide()
+
+			$.ajax({
+				url: '/check/userIsLogin',
+				cache: false,
+				success: function(data){
+					if(data.value){
+						$('.user_box .user_head_photo').attr('src', data.head_photo)
+						$('.user_box .user_name').html(data.username)
+					}
+				}
+			})
+
+			reRender_login()
+		})
